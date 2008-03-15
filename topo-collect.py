@@ -5,6 +5,7 @@ from tempfile import NamedTemporaryFile, mkstemp
 from subprocess import Popen
 from string import Template
 from optparse import OptionParser
+from common import FuncStats
 
 dtrace_tmpl = Template("""
 #!/usr/sbin/dtrace -s

@@ -30,7 +30,7 @@ class FuncStats(object):
             self.callees)
 
     def __repr__(self):
-        return "FuncStats(%s, %s, %s, %s, %s, %s, %s)" % (
+        return "FuncStats('%s', %s, %s, %s, %s, %s, %s)" % (
             self.name, 
             self.total_time, 
             self.contrib_time, 
@@ -38,3 +38,36 @@ class FuncStats(object):
             self.call_count, 
             self.callers, 
             self.callees)
+
+    @staticmethod
+    def from_file(path):
+        result_file = file(path, 'r')
+        lines = result_file.readlines()
+        result_file.close()
+    
+        fnstats = [eval(l) for l in lines]
+        return fnstats
+    
+    @staticmethod
+    def create_index(fnstats):
+        pairs = [(fnstat.name, fnstat) for fnstat in fnstats]
+        return dict(pairs)
+
+    @staticmethod
+    def normalize(fnstats):
+        """Normalize the total_time, contrib_time, and call_count attributes 
+        of a set of FuncStat objects."""
+        
+        total_time_sum = sum((fnstat.contrib_time for fnstat in fnstats))
+        contrib_time_sum = sum((fnstat.contrib_time for fnstat in fnstats))
+        call_count_sum = sum((fnstat.call_count for fnstat in fnstats))
+
+        norm_fnstats = []
+        for fnstat in fnstats:
+            fnstat.total_time = float(fnstat.total_time) / float(total_time_sum)
+            fnstat.contrib_time = float(fnstat.contrib_time) / float(contrib_time_sum)
+            fnstat.call_count = float(fnstat.call_count) / float(call_count_sum)
+            norm_fnstats.append(fnstat)
+
+        return norm_fnstats
+        
